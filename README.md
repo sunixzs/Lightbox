@@ -99,7 +99,7 @@ Just another lightbox for iframe, ajax and images.
   </ul>
 
   <script>
-  requirejs(["Lightbox"], function (Lightbox) {
+  requirejs(["Lightbox.min"], function (Lightbox) {
     var anchors = document.querySelectorAll("a.lightbox");
     for (var a = 0; a < anchors.length; a++) {
       anchors[a].addEventListener("click", function (evt) {
