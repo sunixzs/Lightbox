@@ -1,0 +1,326 @@
+// Lightbox
+// = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+$lightbox-z-index: 2000;
+
+// selectors
+$lightbox-active: "lightbox-active";
+$lightbox-loading: "lightbox-loading";
+$lightbox-background: "lightbox-background";
+$lightbox-close: "lightbox-close";
+$lightbox-content-container: "lightbox-content-container";
+$lightbox-multiple-items: "multiple-items";
+$lightbox-multiple-items-container: "lightbox-multiple-items-container";
+$lightbox-content: "lightbox-content";
+$lightbox-content-iframe: "lightbox-content-iframe";
+$lightbox-content-ajax: "lightbox-content-ajax";
+$lightbox-content-image: "lightbox-content-image";
+$lightbox-html-no-touch: "html.no-touch";
+$lightbox-previous: "lightbox-previous";
+$lightbox-next: "lightbox-next";
+$lightbox-info: "lightbox-info";
+
+// close-button
+$lightbox-close-size: 3rem;
+$lightbox-close-size-below-minsize: 2rem;
+$lightbox-close-angle: 135deg;
+
+// left-/right-button
+$lightbox-button-width: 60px;
+$lightbox-arrow-width: 2rem;
+$lightbox-arrow-height: 2px;
+
+// spinner/loading-animation
+$lightbox-spinner-size: 3rem;
+
+// colors
+$lightbox-color-inactive: #6F7271;
+$lightbox-color-active: black;
+$lightbox-background-color:white;
+$lightbox-spinner-color: $lightbox-color-inactive;
+
+
+// HTML-Element active state
+// = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+html.#{$lightbox-active} {
+	overflow: hidden;
+
+	body {
+		overflow: hidden;
+	}
+}
+
+
+// Spinner/Loading
+// = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+.#{$lightbox-loading} {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	width: $lightbox-spinner-size;
+	height: $lightbox-spinner-size;
+	margin-left: $lightbox-spinner-size / -2;
+	margin-top: $lightbox-spinner-size / -2;
+	text-align: center;
+	
+	i {
+		font-size: $lightbox-spinner-size;
+		line-height: $lightbox-spinner-size;
+		color: $lightbox-spinner-color;
+	}
+}
+
+
+// Background
+// = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+.#{$lightbox-background} {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background-color: $lightbox-background-color;
+	//background-color: rgba(red($background-color), green($background-color), blue($background-color), .80);
+	z-index: $lightbox-z-index;
+}
+
+
+// Info-Area
+// = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+.#{$lightbox-info} {
+	position: fixed;
+	right: 1rem;
+	bottom: 1rem;
+	z-index: $lightbox-z-index + 2;
+	color: $lightbox-color-inactive;
+
+	&.#{$lightbox-multiple-items} {
+		right: 60px;
+	}
+}
+
+
+// The Container including all contents (outer wrap)
+// = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+.#{$lightbox-content-container} {
+	position: fixed;
+	top: 60px;
+	left: 0;
+	right: 0;
+	bottom: 60px;
+	overflow: hidden;
+	z-index: $lightbox-z-index + 1;
+
+	&.#{$lightbox-multiple-items} {
+		top: 60px;
+		left: 60px;
+		right: 60px;
+		bottom: 60px;
+	}
+}
+
+
+// The container holding multiple content-items (if there are multiple items)
+// = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+.#{$lightbox-multiple-items-container} {
+	position: absolute;
+	top: 0;
+	left: 0;
+	bottom: 0;
+	width: 200%;
+	cursor: move;
+}
+
+
+// A content-element.
+// = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+.#{$lightbox-content} {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	right: 0;
+	bottom: 0;
+	overflow: hidden;
+
+	iframe {
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		border: none;
+	}
+
+	&.ios {
+		overflow-y: auto;
+		-webkit-overflow-scrolling: touch !important;
+	}
+}
+
+
+// A content-element in ajax-mode
+// = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+.#{$lightbox-content}.#{$lightbox-content-ajax} {
+	overflow: auto;
+}
+
+
+// A content-element in image-mode
+// = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+.#{$lightbox-content}.#{$lightbox-content-image} {
+	background-repeat: no-repeat;
+	background-size: contain;
+	background-position: 50% 50%;
+}
+
+
+// A content-element when we have multiple items
+// = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+.#{$lightbox-multiple-items-container} .#{$lightbox-content} {
+	position: relative;
+	float: left;
+	top: auto;
+	left: auto;
+	width: 50%;
+	height: 100%;
+}
+
+
+// Close-Button
+// = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+.#{$lightbox-close} {
+	position: fixed;
+	right: $lightbox-close-size * .75;
+	top: $lightbox-close-size * .75;
+	width: $lightbox-close-size;
+	height: $lightbox-close-size;
+	margin-top: $lightbox-close-size / -2;
+	margin-right: $lightbox-close-size / -2;
+	cursor: pointer;
+	z-index: $lightbox-z-index + 3;
+	-webkit-transition: all 0.2s ease-in-out;
+	   -moz-transition: all 0.2s ease-in-out;
+	    -ms-transition: all 0.2s ease-in-out;
+	     -o-transition: all 0.2s ease-in-out;
+	        transition: all 0.2s ease-in-out;
+	-webkit-transform-origin: 50% 50%;
+	   -moz-transform-origin: 50% 50%;
+	    -ms-transform-origin: 50% 50%;
+	     -o-transform-origin: 50% 50%;
+	        transform-origin: 50% 50%;
+
+	&:before,
+	&:after {
+		position: absolute;
+		content: '';
+		display: inline-block;
+		width: $lightbox-close-size;
+		height: 2px;
+		top: -1px;
+		left: 0;
+		background-color: $lightbox-color-inactive;
+		-webkit-transition: all 0.3s ease-in-out;
+		   -moz-transition: all 0.3s ease-in-out;
+		    -ms-transition: all 0.3s ease-in-out;
+		     -o-transition: all 0.3s ease-in-out;
+		        transition: all 0.3s ease-in-out;
+	}
+
+	&:before {
+		-webkit-transform: translateY($lightbox-close-size / 2) rotateZ(-45deg);
+		   -moz-transform: translateY($lightbox-close-size / 2) rotateZ(-45deg);
+		    -ms-transform: translateY($lightbox-close-size / 2) rotateZ(-45deg);
+		     -o-transform: translateY($lightbox-close-size / 2) rotateZ(-45deg);
+		        transform: translateY($lightbox-close-size / 2) rotateZ(-45deg);
+	}
+
+	&:after {
+		-webkit-transform: translateY($lightbox-close-size / 2) rotateZ(45deg);
+		   -moz-transform: translateY($lightbox-close-size / 2) rotateZ(45deg);
+		    -ms-transform: translateY($lightbox-close-size / 2) rotateZ(45deg);
+		     -o-transform: translateY($lightbox-close-size / 2) rotateZ(45deg);
+		        transform: translateY($lightbox-close-size / 2) rotateZ(45deg);
+	}
+	
+	#{$lightbox-html-no-touch} &:hover {
+		-webkit-transform: rotate(180deg);
+		   -moz-transform: rotate(180deg);
+		    -ms-transform: rotate(180deg);
+		     -o-transform: rotate(180deg);
+		        transform: rotate(180deg);
+		
+		&:before,
+		&:after {
+			background-color: $lightbox-color-active;
+		}
+	}
+}
+
+
+// Previous- and Next-Buttons
+// = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+.#{$lightbox-previous},
+.#{$lightbox-next} {
+	position: fixed;
+	width: $lightbox-button-width;
+	top: 0;
+	bottom: 0;
+	//background-color: rgba(255,0,0,.5);
+	cursor: pointer;
+	z-index: $lightbox-z-index + 2;
+	
+	&:before,
+	&:after {
+		content: " ";
+		position: absolute;
+		width: $lightbox-arrow-width;
+		height: $lightbox-arrow-height;
+		background-color: $lightbox-color-inactive;
+		top: 50%;
+	}
+	
+	&:before {
+		transform: rotate(-45deg);
+	}
+	
+	&:after {
+		transform: rotate(45deg);
+	}
+	
+	html.no-touch &:hover {
+		&:before,
+		&:after {
+			background-color: $lightbox-color-active;
+		}
+	}
+}
+
+.#{$lightbox-previous} {
+	left: $lightbox-button-width / 10;
+	
+	&:before {
+		left: $lightbox-button-width / 10;
+		margin-top: $lightbox-arrow-width / -3;
+	}
+	
+	&:after {
+		left: $lightbox-button-width / 10;
+		margin-top: $lightbox-arrow-width / 3;
+	}
+}
+
+.#{$lightbox-next} {
+	right: $lightbox-button-width / 10;
+	
+	&:before {
+		right: $lightbox-button-width / 10;
+		margin-top: $lightbox-arrow-width / 3;
+	}
+	
+	&:after {
+		right: $lightbox-button-width / 10;
+		margin-top: $lightbox-arrow-width / -3;
+	}
+}
