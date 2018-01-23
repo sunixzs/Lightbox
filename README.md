@@ -4,6 +4,7 @@ Just another lightbox for iframe, ajax and images.
 ## Requirements
 * requirejs (http://requirejs.org/)
 * Dragdealer.js (https://github.com/skidding/dragdealer)
+* Uses FontAwesome for the spinner-icon (http://fontawesome.io/)
 
 ## Example JavaScript-Configuration
 ```
