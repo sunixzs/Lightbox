@@ -1,6 +1,11 @@
 # Lightbox
 Just another lightbox for iframe, ajax and images.
 
+## ChangeLog
+
+### 0.0.0 initial beta version
+Tested some stuff, but not all.
+
 ## Requirements
 * Dragdealer for multiple items in lightbox (https://github.com/skidding/dragdealer)
 * Uses FontAwesome for the spinner-icon (http://fontawesome.io/)
