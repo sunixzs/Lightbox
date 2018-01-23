@@ -1,17 +1,17 @@
-define(['jquery'], function ($) {
-    "use strict";
+(function (window) {
+    'use strict';
 
-    var Lightbox = function (params) {
+    function Lightbox(params) {
         var self = this;
-        this.isVisible = false;
+
         this.dragdealer = null;
         this.settings = {
             items: [], // items to show in lightbox. Each item must have target and mode defined. A title and parameter (post-parameters) could be defined.
             itemsKey: 0, // Current position in items. The current visible screen.
-            container: $("body"), // main container to add the lightbox
-            backgroundHtml: '<div class="lightbox-background"></div>', // HTML used for the lightbox background
-            closeHtml: '<div class="lightbox-close"></div>', // HTML used for the close button
-            contentContainerHtml: '<div class="lightbox-content-container"></div>', // HTML used for the element with the content in
+            container: document.querySelector("body"), // main container to add the lightbox
+            backgroundHtml: '<div class="lightbox-background lightbox-opacity-animation"></div>', // HTML used for the lightbox background
+            closeHtml: '<div class="lightbox-close lightbox-opacity-animation"></div>', // HTML used for the close button
+            contentContainerHtml: '<div class="lightbox-content-container lightbox-opacity-animation"></div>', // HTML used for the element with the content in
             multipleItemsClass: 'multiple-items', // CSS-class, which will be set on the previous container-element and the info-element, if there are multiple items.
             multipleItemsContainerHtml: '<div></div>', // HTML used for the inner container, if there is more than one item.
             multipleItemsContainerClass: 'lightbox-multiple-items-container', // CSS-class for the container above. Also used for Dragdealer as slide.
@@ -24,12 +24,12 @@ define(['jquery'], function ($) {
             iframeClass: 'lightbox-iframe', // CSS-class for the iframe-element in the content-element in iframe-mode
             iframeTransparencyMode: true, // if true, the iframe gets an transparency-attribute.
             htmlActiveClass: 'lightbox-active', // CSS-class to be set/removed, if the lightbox is active/inactive
-            previousHtml: '<div class="lightbox-previous"></div>', // HTML used for the previous-button-element
-            nextHtml: '<div class="lightbox-next"></div>', // HTML used for the next-button-element
-            infoHtml: '<div class="lightbox-info"></div>', // HTML used for the info-area
-            loadingHtml: '<div class="lightbox-loading"><i class="fa fa-spinner fa-spin fa-fw"></i></div>', // HTML used for the spinner
+            previousHtml: '<div class="lightbox-previous lightbox-opacity-animation"></div>', // HTML used for the previous-button-element
+            nextHtml: '<div class="lightbox-next lightbox-opacity-animation"></div>', // HTML used for the next-button-element
+            infoHtml: '<div class="lightbox-info lightbox-opacity-animation"></div>', // HTML used for the info-area
+            loadingHtml: '<div class="lightbox-loading lightbox-opacity-animation"><i class="fa fa-spinner fa-spin fa-fw"></i></div>', // HTML used for the spinner
             closeOnBackgroundClick: true, // if true, the lightbox will be closed if the background was clicked
-            pathToRequirejsDragdealer: 'dragdealer.min' // we use requirejs to load Dragdealer if needed, if there are multiple items. This is the part in the requirejs-array.
+            pathToRequirejsDragdealer: 'dragdealer.min' // we use requirejs to load Dragdealer if needed, if there are multiple items. This is the part in the requirejs-array. Leave empty, if Dragdealer is allready loaded.
         };
 
         /**
@@ -59,46 +59,73 @@ define(['jquery'], function ($) {
          */
         var Element = function (html) {
             var self = this;
-            this.html = html;
-            this.jqe = null;
             this.isVisible = true;
+            this.html = html.trim();
+            this.element = null;
 
             this.get = function () {
-                if (this.jqe === null || this.jqe.length === 0) {
-                    this.jqe = $(html);
+                if (this.element === null || typeof this.element !== "object") {
+                    // create dom-element from html-string by using html5 template-element
+                    let template = document.createElement('template');
+                    template.innerHTML = this.html;
+                    this.element = template.content.firstChild;
                 }
-                return this.jqe;
+                return this.element;
             };
 
-            this.show = function (cb) {
+            this.show = function () {
                 if (this.isVisible === false) {
-                    this.get().stop().fadeIn(function () {
-                        if (typeof cb === "function") {
-                            cb(self);
-                        }
-                    });
+                    this.get().style.opacity = "1";
                     this.isVisible = true;
                 }
             };
 
-            this.hide = function (cb) {
+            this.hide = function () {
                 if (this.isVisible === true) {
-                    this.get().stop().fadeOut(function () {
-                        if (typeof cb === "function") {
-                            cb(self);
-                        }
-                    });
+                    this.get().style.opacity = "0";
                     this.isVisible = false;
                 }
             }
 
-            this.remove = function (cb) {
-                this.get().remove();
-                this.jqe = null;
-                if (typeof cb === "function") {
-                    cb(self);
-                }
+            this.remove = function () {
+                this.get().parentNode.removeChild(this.get());
             }
+
+            this.hideAndRemove = function (cb) {
+                this.hide();
+                window.setTimeout(function () {
+                    self.remove();
+                    if (typeof cb === "function") {
+                        cb();
+                    }
+                }, 300);
+            }
+
+            this.addClass = function (c) {
+                if (c.trim().indexOf(" ") >= 0) {
+                    let cc = c.split(" ");
+                    for (let i = 0; i < cc.length; i++) {
+                        if (cc[i].trim()) {
+                            this.get().classList.add(cc[i].trim());
+                        }
+                    }
+                } else {
+                    this.get().classList.add(c.trim());
+                }
+            };
+
+            this.removeClass = function (c) {
+                if (c.trim().indexOf(" ") >= 0) {
+                    let cc = c.split(" ");
+                    for (let i = 0; i < cc.length; i++) {
+                        if (cc[i].trim()) {
+                            this.get().classList.remove(cc[i]);
+                        }
+                    }
+                } else {
+                    this.get().classList.remove(c.trim());
+                }
+            };
 
             return this;
         };
@@ -135,6 +162,21 @@ define(['jquery'], function ($) {
         }
 
         /**
+         * event wrapper
+         */
+        this.event = {
+            addEvent: function (elem, event, fn) {
+                elem.addEventListener(event, fn, false);
+            },
+            removeEvent: function (elem, event, fn) {
+                elem.removeEventListener(event, fn, false);
+            },
+            preventDefault: function (evt) {
+                evt.preventDefault();
+            }
+        };
+
+        /**
          * Method to open the lightbox after items or one item is defined.
          */
         this.open = function () {
@@ -143,102 +185,104 @@ define(['jquery'], function ($) {
                 return null;
             }
 
-            if (this.isVisible === false) {
-                // create background
-                this.backgroundElement = new Element(this.settings.backgroundHtml);
-                this.settings.container.append(this.backgroundElement.get());
-                this.backgroundElement.show();
+            // create background
+            this.backgroundElement = new Element(this.settings.backgroundHtml);
+            this.backgroundElement.hide();
+            this.settings.container.appendChild(this.backgroundElement.get());
+            this.backgroundElement.show();
 
-                if (this.settings.closeOnBackgroundClick === true) {
-                    this.backgroundElement.get().on("click", function () {
-                        self.close();
-                    });
-                }
-
-                // create close button
-                this.closeElement = new Element(this.settings.closeHtml);
-                this.settings.container.append(this.closeElement.get());
-                this.closeElement.show();
-                this.closeElement.get().on("click", function () {
+            if (this.settings.closeOnBackgroundClick === true) {
+                this.event.addEvent(this.backgroundElement.get(), "click", function () {
                     self.close();
                 });
-
-                // create container for all contents
-                this.contentContainerElement = new Element(this.settings.contentContainerHtml);
-                this.settings.container.append(this.contentContainerElement.get());
-
-                // add special method to add automatically content to the container in relation to one item at all or multiple items.
-                this.contentContainerElement.multipleItemsContainer = null;
-                this.contentContainerElement.addContentElement = function (ceToAdd) {
-                    if (self.settings.items.length > 1) {
-                        if (this.multipleItemsContainer === null) {
-                            this.multipleItemsContainer = new Element(self.settings.multipleItemsContainerHtml);
-                            this.get().append(this.multipleItemsContainer.get().addClass(self.settings.multipleItemsContainerClass).css("width", self.settings.items.length * 100 + "%"));
-                        }
-                        this.multipleItemsContainer.get().append(ceToAdd.css("width", 100 / self.settings.items.length + "%"));
-                    } else {
-                        this.get().append(ceToAdd);
-                    }
-                };
-
-                // create info area
-                this.infoElement = new Element(this.settings.infoHtml);
-                this.settings.container.append(this.infoElement.get());
-
-                // do some more, if there is more than one item
-                if (this.settings.items.length > 1) {
-                    // create previous button
-                    this.previousElement = new Element(this.settings.previousHtml);
-                    this.previousElement.get().on("click", function () {
-                        self.showPreviousItem();
-                    });
-                    this.settings.container.append(this.previousElement.get());
-
-                    // create next button
-                    this.nextElement = new Element(this.settings.nextHtml);
-                    this.nextElement.get().on("click", function () {
-                        self.showNextItem();
-                    });
-                    this.settings.container.append(this.nextElement.get());
-                }
-
-                this.isVisible = true;
             }
 
+            // create close button
+            this.closeElement = new Element(this.settings.closeHtml);
+            this.closeElement.hide();
+            this.settings.container.appendChild(this.closeElement.get());
+            this.closeElement.show();
+            this.event.addEvent(this.closeElement.get(), "click", function () {
+                self.close();
+            });
+
+            // create container for all contents
+            this.contentContainerElement = new Element(this.settings.contentContainerHtml);
+            this.settings.container.appendChild(this.contentContainerElement.get());
+
+            // add special method to add automatically content to the container in relation to one item at all or multiple items.
+            this.contentContainerElement.multipleItemsContainer = null;
+            this.contentContainerElement.addContentElement = function (ceToAdd) {
+                if (self.settings.items.length > 1) {
+                    if (this.multipleItemsContainer === null) {
+                        this.multipleItemsContainer = new Element(self.settings.multipleItemsContainerHtml);
+                        this.multipleItemsContainer.addClass(self.settings.multipleItemsContainerClass);
+                        this.multipleItemsContainer.get().style.width = self.settings.items.length * 100 + "%";
+                        this.get().appendChild(this.multipleItemsContainer.get());
+                    }
+                    ceToAdd.style.width = 100 / self.settings.items.length + "%";
+                    this.multipleItemsContainer.get().appendChild(ceToAdd);
+                } else {
+                    this.get().appendChild(ceToAdd);
+                }
+            };
+
+            // create info area
+            this.infoElement = new Element(this.settings.infoHtml);
+            this.settings.container.appendChild(this.infoElement.get());
+
+            // do some more, if there is more than one item
             if (this.settings.items.length > 1) {
+                // create previous button
+                this.previousElement = new Element(this.settings.previousHtml);
+                this.event.addEvent(this.previousElement.get(), "click", function () {
+                    self.showPreviousItem();
+                });
+                this.settings.container.appendChild(this.previousElement.get());
+
+                // create next button
+                this.nextElement = new Element(this.settings.nextHtml);
+                this.event.addEvent(this.nextElement.get(), "click", function () {
+                    self.showNextItem();
+                });
+                this.settings.container.appendChild(this.nextElement.get());
+
                 // add multiple-items-class to container- and info-element
-                this.infoElement.get().addClass(this.settings.multipleItemsClass);
-                this.contentContainerElement.get().addClass(this.settings.multipleItemsClass);
+                this.infoElement.addClass(this.settings.multipleItemsClass);
+                this.contentContainerElement.addClass(this.settings.multipleItemsClass);
                 for (var e = 0; e < this.settings.items.length; e++) {
                     this.addContent(this.settings.items[e]);
                 }
 
                 // load and init Dragdealer
-                require([this.settings.pathToRequirejsDragdealer], function (Dragdealer) {
-                    self.dragdealer = new Dragdealer(self.contentContainerElement.get().get(0), {
-                        steps: self.settings.items.length,
-                        speed: 0.3,
-                        loose: true,
-                        requestAnimationFrame: true,
-                        handleClass: self.settings.multipleItemsContainerClass,
-                        callback: function () {
-                            var s = self.dragdealer.getStep()[0];
-                            self.settings.itemsKey = s;
-                            self.infoElement.get().html(self.settings.items[s - 1].title ? s + "/" + self.settings.items.length + " - " + self.settings.items[s - 1].title : s + "/" + self.settings.items.length);
-                        }
+                var dragdealerConfiguration = {
+                    steps: self.settings.items.length,
+                    speed: 0.3,
+                    loose: true,
+                    requestAnimationFrame: true,
+                    handleClass: self.settings.multipleItemsContainerClass,
+                    callback: function () {
+                        var s = self.dragdealer.getStep()[0];
+                        self.settings.itemsKey = s;
+                        self.infoElement.get().innerHTML = self.settings.items[s - 1].title ? s + "/" + self.settings.items.length + " - " + self.settings.items[s - 1].title : s + "/" + self.settings.items.length;
+                    }
+                };
+                if (this.settings.pathToRequirejsDragdealer) {
+                    require([this.settings.pathToRequirejsDragdealer], function (Dragdealer) {
+                        self.dragdealer = new Dragdealer(self.contentContainerElement.get(), dragdealerConfiguration);
+                        self.dragdealer.setStep(self.settings.itemsKey + 1);
                     });
-
+                } else {
+                    self.dragdealer = new Dragdealer(self.contentContainerElement.get(), dragdealerConfiguration);
                     self.dragdealer.setStep(self.settings.itemsKey + 1);
-                });
+                }
             } else {
                 this.addContent(this.settings.items[this.settings.itemsKey]);
             }
 
             // prevent scrolling the page (on touchdevices)
-            $("html").addClass(this.settings.htmlActiveClass);
-            $(window).on("touchmove.Lightbox", function (event) {
-                event.preventDefault();
-            });
+            document.querySelector("html").classList.add(this.settings.htmlActiveClass);
+            this.event.addEvent(window, "touchmove", this.event.preventDefault);
 
             return this;
         };
@@ -270,39 +314,34 @@ define(['jquery'], function ($) {
          */
         this.addContentIframe = function (item) {
             item.contentElement = new Element(this.settings.contentHtml);
-            item.contentElement.get().addClass(this.settings.contentClassIframe);
+            item.contentElement.addClass(this.settings.contentClassIframe);
             this.contentContainerElement.addContentElement(item.contentElement.get());
 
             var loadingElement = new Element(this.settings.loadingHtml);
-            item.contentElement.get().html(loadingElement.get());
+            item.contentElement.get().appendChild(loadingElement.get());
 
-            var scrolling = 'yes';
+            let scrolling = 'yes';
             if (navigator.userAgent.match(/(iPod|iPhone|iPad)/)) {
-                item.contentElement.get().addClass(this.settings.contentClassIos);
+                item.contentElement.addClass(this.settings.contentClassIos);
                 scrolling = 'no';
             }
 
-            var iframe = $('<iframe>', {
-                src: item.target,
-                class: this.settings.iframeClass,
-                frameborder: 0,
-                allowTransparency: (this.settings.iframeTransparencyMode) ? 'true' : 'false',
-                scrolling: scrolling
-            })
-                .hide()
-                .css("background-color", "transparent")
-                .on("load", function () {
-                    // console.log($(this).contents().height());
-                    if (self.settings.iframeTransparencyMode) {
-                        $(this).fadeIn().contents().find("html,body").css("background-color", "transparent");
-                    }
+            var iframe = new Element('<iframe src="' + item.target + '" class="' + this.settings.iframeClass + '" frameborder="0" scrolling="' + scrolling + '"></iframe>');
+            iframe.hide();
+            if (this.settings.iframeTransparencyMode) {
+                iframe.get().setAttribute("allowtransparency", "true");
+                iframe.get().style.backgroundColor = "transparent";
+            }
+            item.contentElement.get().appendChild(iframe.get());
 
-                    loadingElement.hide(function (e) {
-                        e.remove();
-                    });
-                });
-
-            item.contentElement.get().append(iframe);
+            this.event.addEvent(iframe.get(), "load", function () {
+                // @todo Find html and body in iframe and set backgroundColor to transparent
+                //if (self.settings.iframeTransparencyMode) {
+                //
+                //}
+                iframe.show();
+                loadingElement.hideAndRemove();
+            });
         };
 
         /**
@@ -312,31 +351,29 @@ define(['jquery'], function ($) {
          */
         this.addContentAjax = function (item, method) {
             item.contentElement = new Element(this.settings.contentHtml);
-            item.contentElement.get().addClass(method === "get" ? this.settings.contentClassGet : this.settings.contentClassPost);
+            item.contentElement.addClass(method === "get" ? this.settings.contentClassGet : this.settings.contentClassPost);
             this.contentContainerElement.addContentElement(item.contentElement.get());
 
             var loadingElement = new Element(this.settings.loadingHtml);
-            item.contentElement.get().html(loadingElement.get());
+            item.contentElement.get().appendChild(loadingElement.get());
 
             if (navigator.userAgent.match(/(iPod|iPhone|iPad)/)) {
-                item.contentElement.get().addClass(this.settings.contentClassIos);
+                item.contentElement.addClass(this.settings.contentClassIos);
             }
 
-            var xhr = null;
-            $.ajax({
-                method: method === "get" ? "GET" : "POST",
-                url: item.target,
-                data: typeof item.parameter === "object" ? item.parameter : {}
-            })
-                .done(function (returnHtml) {
-                    item.contentElement.get().html(returnHtml);
-                    if (item.contentElement.get() === null) {
-                        console.log("ERROR: You've loaded a html document (including the html-tag) via AJAX and not only a html-node!");
-                    }
-                })
-                .fail(function () {
-                    item.contentElement.get().html("ERROR: could not load content from " + item.target + "!");
-                });
+            var xhr = new XMLHttpRequest();
+            xhr.open(method === "get" ? "GET" : "POST", item.target);
+            this.event.addEvent(xhr, 'load', function (evt) {
+                if (xhr.status >= 200 && xhr.status < 300) {
+                    let e = new Element(xhr.responseText);
+                    item.contentElement.get().appendChild(e.get());
+                } else {
+                    item.contentElement.get().innerHTML("ERROR: could not load content from " + item.target + "!");
+                    console.warn(xhr.statusText, xhr.responseText);
+                }
+                loadingElement.hideAndRemove();
+            });
+            xhr.send(typeof item.parameter === "object" ? item.parameter : {});
         };
 
         /**
@@ -345,11 +382,11 @@ define(['jquery'], function ($) {
          */
         this.addContentImage = function (item) {
             item.contentElement = new Element(this.settings.contentHtml);
-            item.contentElement.get().addClass(this.settings.contentClassImage);
+            item.contentElement.addClass(this.settings.contentClassImage);
             this.contentContainerElement.addContentElement(item.contentElement.get());
 
             item.loadingElement = new Element(this.settings.loadingHtml);
-            item.contentElement.get().html(item.loadingElement.get());
+            item.contentElement.get().appendChild(item.loadingElement.get());
 
             this.loadImage(item, function (item, state) {
                 item.loadingElement.hide(function (elem) {
@@ -357,13 +394,16 @@ define(['jquery'], function ($) {
                 });
                 switch (state) {
                     case "error":
-                        item.contentElement.get().html("ERROR: could not load the image from " + item.target + ".");
+                        item.contentElement.get().innerHTML = "ERROR: could not load the image from " + item.target + ".";
                         break;
                     case "timeout":
-                        item.contentElement.get().html("ERROR: loading the image from " + item.target + " took too long.");
+                        item.contentElement.get().innerHTML = "ERROR: loading the image from " + item.target + " took too long.";
                         break;
                     default:
-                        item.contentElement.get().css("backgroundImage", "url(" + item.target + ")");
+                        item.contentElement.get().style.backgroundImage = "url(" + item.target + ")";
+                        if (item.title && self.settings.items.length === 1) {
+                            self.infoElement.innerHTML = item.title;
+                        }
                         break;
                 }
             }, 5000);
@@ -426,15 +466,13 @@ define(['jquery'], function ($) {
          */
         this.close = function () {
             if (this.backgroundElement) {
-                this.backgroundElement.hide(function (elem) {
-                    elem.remove();
+                this.backgroundElement.hideAndRemove(function () {
                     self.backgroundElement = null;
                 });
             }
 
             if (this.closeElement) {
-                this.closeElement.hide(function (elem) {
-                    elem.remove();
+                this.closeElement.hideAndRemove(function () {
                     self.closeElement = null;
                 });
             }
@@ -447,26 +485,28 @@ define(['jquery'], function ($) {
                 this.infoElement = null;
             }
             if (this.previousElement) {
-                this.previousElement.hide(function (elem) {
-                    elem.remove();
+                this.previousElement.hideAndRemove(function () {
                     self.previousElement = null;
                 });
             }
             if (this.nextElement) {
-                this.nextElement.hide(function (elem) {
-                    elem.remove();
+                this.nextElement.hideAndRemove(function () {
                     self.nextElement = null;
                 });
             }
 
-            this.isVisible = false;
-
-            $("html").removeClass(this.settings.htmlActiveClass);
-            $(window).off("touchmove.Lightbox");
+            document.querySelector("html").classList.remove(this.settings.htmlActiveClass);
+            this.event.removeEvent(window, "touchmove", this.event.preventDefault);
 
             return this;
         };
-    };
+    }
 
-    return Lightbox;
-});
+    if (typeof define === 'function' && define.amd) {
+        define(function () {
+            return Lightbox;
+        });
+    } else {
+        window.Lightbox = Lightbox;
+    }
+})(window);

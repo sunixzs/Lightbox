@@ -19,6 +19,7 @@ $lightbox-html-no-touch: "html.no-touch";
 $lightbox-previous: "lightbox-previous";
 $lightbox-next: "lightbox-next";
 $lightbox-info: "lightbox-info";
+$lightbox-opacity-animation: "lightbox-opacity-animation";
 
 // close-button
 $lightbox-close-size: 3rem;
@@ -48,6 +49,15 @@ html.#{$lightbox-active} {
 	body {
 		overflow: hidden;
 	}
+}
+
+
+.#{$lightbox-opacity-animation} {
+	-webkit-transition: opacity 0.2s ease-in-out;
+	   -moz-transition: opacity 0.2s ease-in-out;
+	    -ms-transition: opacity 0.2s ease-in-out;
+	     -o-transition: opacity 0.2s ease-in-out;
+	        transition: opacity 0.2s ease-in-out;
 }
 
 
