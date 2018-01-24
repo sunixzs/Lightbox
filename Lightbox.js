@@ -416,7 +416,6 @@
             xhr.open(method === "get" ? "GET" : "POST", item.target);
             this.event.addEvent(xhr, 'load', function (evt) {
                 if (xhr.status >= 200 && xhr.status < 300) {
-                    // @todo Get JavaScript executed in a lightweight way.
                     item.contentElement.get().innerHTML = xhr.responseText;
                     self.event.itemCallback(item);
                     if (self.settings.executeAjaxScript) {
