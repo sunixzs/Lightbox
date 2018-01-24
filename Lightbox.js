@@ -21,6 +21,7 @@
             contentClassImage: 'lightbox-content-image', // additional CSS-class for content-elements in image-mode
             contentClassGet: 'lightbox-content-ajax lightbox-content-get', // additional CSS-classes for content-elements in ajax-get-mode
             contentClassPost: 'lightbox-content-ajax lightbox-content-post', // additional CSS-class for content-elements in ajax-post-mode
+            executeAjaxScript: true,
             iframeClass: 'lightbox-iframe', // CSS-class for the iframe-element in the content-element in iframe-mode
             iframeTransparencyMode: true, // if true, the iframe gets an transparency-attribute.
             htmlActiveClass: 'lightbox-active', // CSS-class to be set/removed, if the lightbox is active/inactive
@@ -187,6 +188,33 @@
             itemCallback: function (item) {
                 if (item.callback && typeof item.callback === "function") {
                     item.callback(item, self);
+                }
+            }
+        };
+
+        /**
+         * Finds and evals javascript in html string
+         * @param {string} html 
+         */
+        this.executeScript = function (html) {
+            var scripts = [];
+
+            while (html.indexOf("<script") > -1 || html.indexOf("</script") > -1) {
+                var s = html.indexOf("<script");
+                var s_e = html.indexOf(">", s);
+                var e = html.indexOf("</script", s);
+                var e_e = html.indexOf(">", e);
+                scripts.push(html.substring(s_e + 1, e));
+
+                // remove from html-string
+                html = html.substring(0, s) + html.substring(e_e + 1);
+            }
+
+            for (var i = 0; i < scripts.length; i++) {
+                try {
+                    eval(scripts[i]);
+                } catch (e) {
+
                 }
             }
         };
@@ -391,6 +419,9 @@
                     // @todo Get JavaScript executed in a lightweight way.
                     item.contentElement.get().innerHTML = xhr.responseText;
                     self.event.itemCallback(item);
+                    if (self.settings.executeAjaxScript) {
+                        self.executeScript(xhr.responseText);
+                    }
                 } else {
                     item.contentElement.get().innerHTML = "ERROR: could not load content from " + item.target + "!";
                     console.warn(xhr.statusText, xhr.responseText);
