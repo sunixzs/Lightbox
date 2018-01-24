@@ -200,21 +200,21 @@
             var scripts = [];
 
             while (html.indexOf("<script") > -1 || html.indexOf("</script") > -1) {
-                var s = html.indexOf("<script");
-                var s_e = html.indexOf(">", s);
-                var e = html.indexOf("</script", s);
-                var e_e = html.indexOf(">", e);
-                scripts.push(html.substring(s_e + 1, e));
+                var start_a = html.indexOf("<script");
+                var start_o = html.indexOf(">", start_a);
+                var end_a = html.indexOf("</script", start_a);
+                var end_o = html.indexOf(">", end_a);
+                scripts.push(html.substring(start_o + 1, end_a));
 
                 // remove from html-string
-                html = html.substring(0, s) + html.substring(e_e + 1);
+                html = html.substring(0, start_a) + html.substring(end_o + 1);
             }
 
             for (var i = 0; i < scripts.length; i++) {
                 try {
                     eval(scripts[i]);
                 } catch (e) {
-
+                    console.log(e);
                 }
             }
         };
