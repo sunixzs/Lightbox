@@ -29,6 +29,7 @@
             infoHtml: '<div class="lightbox-info lightbox-opacity-animation"></div>', // HTML used for the info-area
             loadingHtml: '<div class="lightbox-loading lightbox-opacity-animation"><i class="fa fa-spinner fa-spin fa-fw"></i></div>', // HTML used for the spinner
             closeOnBackgroundClick: true, // if true, the lightbox will be closed if the background was clicked
+            imageLoadTimeout: 10, // sends an image should be loaded before timeout
             pathToRequirejsDragdealer: 'dragdealer.min' // we use requirejs to load Dragdealer if needed, if there are multiple items. This is the part in the requirejs-array. Leave empty, if Dragdealer is allready loaded.
         };
 
@@ -75,14 +76,14 @@
 
             this.show = function () {
                 if (this.isVisible === false) {
-                    this.get().style.opacity = "1";
+                    this.get().style.opacity = 1;
                     this.isVisible = true;
                 }
             };
 
             this.hide = function () {
                 if (this.isVisible === true) {
-                    this.get().style.opacity = "0";
+                    this.get().style.opacity = 0;
                     this.isVisible = false;
                 }
             }
@@ -155,7 +156,8 @@
                 target: params.target,
                 mode: params.mode || "iframe",
                 title: params.title || "",
-                parameter: params.parameter || {}
+                data: params.data || null,
+                callback: params.callback || null
             });
 
             return this;
@@ -173,6 +175,11 @@
             },
             preventDefault: function (evt) {
                 evt.preventDefault();
+            },
+            itemCallback: function (item) {
+                if (item.callback && typeof item.callback === "function") {
+                    item.callback(item, self);
+                }
             }
         };
 
@@ -317,8 +324,8 @@
             item.contentElement.addClass(this.settings.contentClassIframe);
             this.contentContainerElement.addContentElement(item.contentElement.get());
 
-            var loadingElement = new Element(this.settings.loadingHtml);
-            item.contentElement.get().appendChild(loadingElement.get());
+            item.loadingElement = new Element(this.settings.loadingHtml);
+            item.contentElement.get().appendChild(item.loadingElement.get());
 
             let scrolling = 'yes';
             if (navigator.userAgent.match(/(iPod|iPhone|iPad)/)) {
@@ -340,7 +347,11 @@
                 //
                 //}
                 iframe.show();
-                loadingElement.hideAndRemove();
+                item.loadingElement.hideAndRemove();
+                if (item.title && self.settings.items.length === 1) {
+                    self.infoElement.get().innerHTML = item.title;
+                }
+                self.event.itemCallback(item);
             });
         };
 
@@ -354,7 +365,7 @@
             item.contentElement.addClass(method === "get" ? this.settings.contentClassGet : this.settings.contentClassPost);
             this.contentContainerElement.addContentElement(item.contentElement.get());
 
-            var loadingElement = new Element(this.settings.loadingHtml);
+            let loadingElement = new Element(this.settings.loadingHtml);
             item.contentElement.get().appendChild(loadingElement.get());
 
             if (navigator.userAgent.match(/(iPod|iPhone|iPad)/)) {
@@ -365,15 +376,15 @@
             xhr.open(method === "get" ? "GET" : "POST", item.target);
             this.event.addEvent(xhr, 'load', function (evt) {
                 if (xhr.status >= 200 && xhr.status < 300) {
-                    let e = new Element(xhr.responseText);
-                    item.contentElement.get().appendChild(e.get());
+                    // @todo Get JavaScript executed in a lightweight way.
+                    item.contentElement.get().innerHTML = xhr.responseText;
+                    self.event.itemCallback(item);
                 } else {
-                    item.contentElement.get().innerHTML("ERROR: could not load content from " + item.target + "!");
+                    item.contentElement.get().innerHTML = "ERROR: could not load content from " + item.target + "!";
                     console.warn(xhr.statusText, xhr.responseText);
                 }
-                loadingElement.hideAndRemove();
             });
-            xhr.send(typeof item.parameter === "object" ? item.parameter : {});
+            xhr.send(method === "post" && item.data ? item.data : null);
         };
 
         /**
@@ -389,9 +400,7 @@
             item.contentElement.get().appendChild(item.loadingElement.get());
 
             this.loadImage(item, function (item, state) {
-                item.loadingElement.hide(function (elem) {
-                    elem.remove();
-                });
+                item.loadingElement.hideAndRemove();
                 switch (state) {
                     case "error":
                         item.contentElement.get().innerHTML = "ERROR: could not load the image from " + item.target + ".";
@@ -402,8 +411,9 @@
                     default:
                         item.contentElement.get().style.backgroundImage = "url(" + item.target + ")";
                         if (item.title && self.settings.items.length === 1) {
-                            self.infoElement.innerHTML = item.title;
+                            self.infoElement.get().innerHTML = item.title;
                         }
+                        self.event.itemCallback(item);
                         break;
                 }
             }, 5000);
@@ -416,7 +426,7 @@
          * @param {number} timeout 
          */
         this.loadImage = function (item, cb, timeout) {
-            timeout = timeout || 5000;
+            timeout = timeout || self.settings.imageLoadTimeout;
             var timedOut = false, timer;
             var img = new Image();
             img.onerror = img.onabort = function () {

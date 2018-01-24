@@ -1,0 +1,16 @@
+html {
+    font-size: 16px;
+    line-height: 1.45;
+    font-family: sans-serif;
+}
+
+body,
+.ajax-content {
+    margin: 0;
+    margin: 0 auto;
+    max-width: 50rem
+}
+
+p {
+    text-align: justify;
+}
