@@ -74,7 +74,7 @@ You also have to set the parameter `pathToRequirejsDragdealer` to an empty strin
 <html>
 <head>
   <title>without requirejs</title>
-  <link rel="stylesheet" type="text/css" href="Lightbbox.css" media="all">
+  <link rel="stylesheet" type="text/css" href="Lightbox.css" media="all">
 </head>
 <body>
   Some content...
