@@ -99,11 +99,6 @@ html.lightbox-active body {
   border: none;
 }
 
-.lightbox-content.ios {
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch !important;
-}
-
 .lightbox-content.lightbox-content-ajax {
   overflow: auto;
 }
@@ -112,6 +107,11 @@ html.lightbox-active body {
   background-repeat: no-repeat;
   background-size: contain;
   background-position: 50% 50%;
+}
+
+.lightbox-content.ios {
+  overflow-y: scroll;
+  -webkit-overflow-scrolling: touch !important;
 }
 
 .lightbox-multiple-items-container .lightbox-content {

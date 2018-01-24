@@ -11,6 +11,10 @@ body,
     max-width: 50rem
 }
 
+.content {
+    padding: 1rem;
+}
+
 p {
     text-align: justify;
 }

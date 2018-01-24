@@ -59,17 +59,22 @@
          * @param {string} html 
          */
         var Element = function (html) {
-            var self = this;
+            var selfElem = this;
             this.isVisible = true;
             this.html = html.trim();
             this.element = null;
 
             this.get = function () {
                 if (this.element === null || typeof this.element !== "object") {
-                    // create dom-element from html-string by using html5 template-element
-                    let template = document.createElement('template');
-                    template.innerHTML = this.html;
-                    this.element = template.content.firstChild;
+                    if ("content" in document.createElement('template')) {
+                        var template = document.createElement('template'); // create dom-element from html-string by using html5 template-element
+                        template.innerHTML = this.html;
+                        this.element = template.content.firstChild;
+                    } else {
+                        var div = document.createElement('div'); // we only can create elements which are valid as a direct child in a div
+                        div.innerHTML = this.html;
+                        this.element = div.firstChild;
+                    }
                 }
                 return this.element;
             };
@@ -95,7 +100,7 @@
             this.hideAndRemove = function (cb) {
                 this.hide();
                 window.setTimeout(function () {
-                    self.remove();
+                    selfElem.remove();
                     if (typeof cb === "function") {
                         cb();
                     }
@@ -104,8 +109,8 @@
 
             this.addClass = function (c) {
                 if (c.trim().indexOf(" ") >= 0) {
-                    let cc = c.split(" ");
-                    for (let i = 0; i < cc.length; i++) {
+                    var cc = c.split(" ");
+                    for (var i = 0; i < cc.length; i++) {
                         if (cc[i].trim()) {
                             this.get().classList.add(cc[i].trim());
                         }
@@ -117,8 +122,8 @@
 
             this.removeClass = function (c) {
                 if (c.trim().indexOf(" ") >= 0) {
-                    let cc = c.split(" ");
-                    for (let i = 0; i < cc.length; i++) {
+                    var cc = c.split(" ");
+                    for (var i = 0; i < cc.length; i++) {
                         if (cc[i].trim()) {
                             this.get().classList.remove(cc[i]);
                         }
@@ -128,6 +133,9 @@
                 }
             };
 
+            this.preventTouchmove = function () {
+                self.event.addEvent(this.get(), "touchmove", self.event.preventDefault);
+            };
             return this;
         };
 
@@ -195,6 +203,7 @@
             // create background
             this.backgroundElement = new Element(this.settings.backgroundHtml);
             this.backgroundElement.hide();
+            this.backgroundElement.preventTouchmove();
             this.settings.container.appendChild(this.backgroundElement.get());
             this.backgroundElement.show();
 
@@ -206,6 +215,7 @@
 
             // create close button
             this.closeElement = new Element(this.settings.closeHtml);
+            this.closeElement.preventTouchmove();
             this.closeElement.hide();
             this.settings.container.appendChild(this.closeElement.get());
             this.closeElement.show();
@@ -236,12 +246,14 @@
 
             // create info area
             this.infoElement = new Element(this.settings.infoHtml);
+            this.infoElement.preventTouchmove();
             this.settings.container.appendChild(this.infoElement.get());
 
             // do some more, if there is more than one item
             if (this.settings.items.length > 1) {
                 // create previous button
                 this.previousElement = new Element(this.settings.previousHtml);
+                this.previousElement.preventTouchmove();
                 this.event.addEvent(this.previousElement.get(), "click", function () {
                     self.showPreviousItem();
                 });
@@ -249,6 +261,7 @@
 
                 // create next button
                 this.nextElement = new Element(this.settings.nextHtml);
+                this.nextElement.preventTouchmove();
                 this.event.addEvent(this.nextElement.get(), "click", function () {
                     self.showNextItem();
                 });
@@ -287,9 +300,8 @@
                 this.addContent(this.settings.items[this.settings.itemsKey]);
             }
 
-            // prevent scrolling the page (on touchdevices)
+            // prevent scrolling the page
             document.querySelector("html").classList.add(this.settings.htmlActiveClass);
-            this.event.addEvent(window, "touchmove", this.event.preventDefault);
 
             return this;
         };
@@ -327,7 +339,7 @@
             item.loadingElement = new Element(this.settings.loadingHtml);
             item.contentElement.get().appendChild(item.loadingElement.get());
 
-            let scrolling = 'yes';
+            var scrolling = 'yes';
             if (navigator.userAgent.match(/(iPod|iPhone|iPad)/)) {
                 item.contentElement.addClass(this.settings.contentClassIos);
                 scrolling = 'no';
@@ -365,8 +377,8 @@
             item.contentElement.addClass(method === "get" ? this.settings.contentClassGet : this.settings.contentClassPost);
             this.contentContainerElement.addContentElement(item.contentElement.get());
 
-            let loadingElement = new Element(this.settings.loadingHtml);
-            item.contentElement.get().appendChild(loadingElement.get());
+            item.loadingElement = new Element(this.settings.loadingHtml);
+            item.contentElement.get().appendChild(item.loadingElement.get());
 
             if (navigator.userAgent.match(/(iPod|iPhone|iPad)/)) {
                 item.contentElement.addClass(this.settings.contentClassIos);
@@ -505,8 +517,8 @@
                 });
             }
 
+            // reactivate scrolling
             document.querySelector("html").classList.remove(this.settings.htmlActiveClass);
-            this.event.removeEvent(window, "touchmove", this.event.preventDefault);
 
             return this;
         };

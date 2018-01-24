@@ -2,7 +2,9 @@
 <html>
 
 <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"> 
     <title>requirejs example</title>
+    <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, user-scalable=yes">
     <link rel="stylesheet" type="text/css" href="example.css" media="all">
     <link rel="stylesheet" type="text/css" href="Lightbox.css" media="all">
     <link rel="stylesheet" type="text/css" href="https://opensource.keycdn.com/fontawesome/4.7.0/font-awesome.min.css" media="all">
@@ -13,161 +15,172 @@
 </head>
 
 <body>
-    <h1>iframe</h1>
-    <a href="example_iframe.html" class="iframe" title="example iframe" target="_blank">open iframe in lightbox</a>
-    <script>
-        requirejs(["Lightbox.min"], function (Lightbox) {
-            var anchors = document.querySelectorAll("a.iframe");
-            for (var a = 0; a < anchors.length; a++) {
-                anchors[a].addEventListener("click", function (evt) {
+    <div class="content">
+        <h1>iframe</h1>
+        <a href="example_iframe.html" class="iframe" title="example iframe" target="_blank">open iframe in lightbox</a>
+        <script>
+            requirejs(["Lightbox"], function (Lightbox) {
+                var anchors = document.querySelectorAll("a.iframe");
+                for (var a = 0; a < anchors.length; a++) {
+                    anchors[a].addEventListener("click", function (evt) {
+                        evt.preventDefault();
+                        var target = evt.target.getAttribute("href");
+                        if (target) {
+                            var lb = new Lightbox();
+                            lb.addItem({
+                                target: target,
+                                mode: "iframe",
+                                title: evt.target.getAttribute("title") || "asd"
+                            });
+                            lb.open();
+                        }
+                    }, false);
+                }
+            });
+        </script>
+
+        <h1>AJAX single</h1>
+        <a href="#" data-url="example_ajax1.html" id="ajax-single">load ajax single</a>
+        <script>
+            requirejs(["Lightbox"], function (Lightbox) {
+                var anchor = document.querySelector("#ajax-single");
+                anchor.addEventListener("click", function (evt) {
                     evt.preventDefault();
-                    var target = evt.target.getAttribute("href");
+                    var target = evt.target.getAttribute("data-url");
                     if (target) {
                         var lb = new Lightbox();
                         lb.addItem({
                             target: target,
-                            mode: "iframe",
-                            title: evt.target.getAttribute("title") || "asd"
-                        });
-                        lb.open();
-                    }
-                }, false);
-            }
-        });
-    </script>
-
-    <h1>AJAX single</h1>
-    <a href="#" data-url="example_ajax1.html" id="ajax-single">load ajax single</a>
-    <script>
-        requirejs(["Lightbox.min"], function (Lightbox) {
-            var anchor = document.querySelector("#ajax-single");
-            anchor.addEventListener("click", function (evt) {
-                evt.preventDefault();
-                var target = evt.target.getAttribute("data-url");
-                if (target) {
-                    var lb = new Lightbox();
-                    lb.addItem({
-                        target: target,
-                        mode: 'get',
-                        callback: function (item, lb) {
-                            console.log(item);
-                            console.log(lb);
-                            alert("Content loaded");
-                        }
-                    });
-                    lb.open();
-                }
-            }, false);
-        });
-    </script>
-
-    <h1>AJAX multiple</h1>
-    <p>shows previous- and next-button and uses dragdealer</p>
-    <button id="ajax-multiple">load ajax multiple</button>
-    <script>
-        requirejs(["Lightbox.min"], function (Lightbox) {
-            let button = document.querySelector("#ajax-multiple");
-            button.addEventListener("click", function (evt) {
-                let lb = new Lightbox({
-                    pathToRequirejsDragdealer: 'https://cdnjs.cloudflare.com/ajax/libs/dragdealer/0.9.9/dragdealer.min.js'
-                });
-
-                lb.addItem({
-                    target: 'example_ajax1.html',
-                    mode: 'get',
-                    title: 'Page #1'
-                });
-
-                let fd = new FormData();
-                fd.append("foo", "bar");
-
-                lb.addItem({
-                    target: 'example_ajax2.html',
-                    mode: 'post',
-                    title: 'Page #2',
-                    data: fd
-                });
-
-                lb.open();
-            }, false);
-        });
-    </script>
-
-    <h1>Images</h1>
-    <p>A group of images. Shows previous- and next-button and uses dragdealer</p>
-    <ul>
-        <li>
-            <a href="https://farm1.staticflickr.com/391/31833526510_a818f4907b_k_d.jpg" class="lightbox" data-title="Orbital-1 Mission Antares Launch" data-group="lightbox_group_1">open image in lightbox</a>
-            <br />Photo by 'NASA on The Commons' on <a href="https://www.flickr.com/photos/nasacommons/31833526510/" target="_blank">Flickr</a>
-        </li>
-        <li>
-            <a href="https://farm6.staticflickr.com/5457/9459374852_ba0e2bc823_k_d.jpg" class="lightbox" data-title="Skylab and Earth Limb" data-group="lightbox_group_1">open image in lightbox</a>
-            <br />Photo by 'NASA on The Commons' on <a href="https://www.flickr.com/photos/nasacommons/9459374852/" target="_blank">Flickr</a>
-        </li>
-        <li>
-            <a href="https://farm3.staticflickr.com/2842/9458008753_da6ca9e57f_o_d.jpg" class="lightbox" data-title="Fireworks of Star Formation Light Up a Galaxy" data-group="lightbox_group_1">open image in lightbox</a>
-            <br />Photo by 'NASA on The Commons' on <a href="https://www.flickr.com/photos/nasacommons/9458008753/" target="_blank">Flickr</a>
-        </li>
-    </ul>
-
-    <p>Single image but with data-group defined.</p>
-    <ul>
-        <li>
-            <a href="https://farm1.staticflickr.com/695/31258502484_59cf226b4f_k_d.jpg" class="lightbox" data-title="Blue Marble 2012" data-group="lightbox_group_4">open image in lightbox</a>
-            <br />Photo by 'NASA on The Commons' on <a href="https://www.flickr.com/photos/nasacommons/31258502484/" target="_blank">Flickr</a>
-        </li>
-    </ul>
-
-    <p>Just a single image.</p>
-    <ul>
-        <li>
-            <a href="https://farm6.staticflickr.com/5348/8980506113_ab7c654c36_o_d.jpg
-            " class="lightbox" data-title="Mars Exploration Rovers, 2003">open image in lightbox</a>
-            <br />Photo by 'NASA on The Commons' on <a href="https://www.flickr.com/photos/nasacommons/8980506113/" target="_blank">Flickr</a>
-        </li>
-    </ul>
-
-    <script>
-        requirejs(["Lightbox.min"], function (Lightbox) {
-            let anchors = document.querySelectorAll("a.lightbox");
-            for (let a = 0; a < anchors.length; a++) {
-                anchors[a].addEventListener("click", function (evt) {
-                    evt.preventDefault();
-                    let target = evt.target.getAttribute("href");
-                    if (target && target.match(/\.(jpeg|jpg|gif|png)$/) !== null) {
-                        let lb = new Lightbox({
-                            pathToRequirejsDragdealer: 'https://cdnjs.cloudflare.com/ajax/libs/dragdealer/0.9.9/dragdealer.min.js'
-                        });
-
-                        let index = 0;
-                        if (evt.target.getAttribute("data-group")) {
-                            let groupedAnchors = document.querySelectorAll("a.lightbox[data-group='" + evt.target.getAttribute("data-group") + "']");
-                            for (let a = 0; a < groupedAnchors.length; a++) {
-                                lb.addItem({
-                                    target: groupedAnchors[a].getAttribute("href"),
-                                    mode: "image",
-                                    title: groupedAnchors[a].getAttribute("data-title") || ""
-                                });
-                                if (target === groupedAnchors[a].getAttribute("href")) {
-                                    index = a;
-                                }
+                            mode: 'get',
+                            callback: function (item, lb) {
+                                console.log(item);
+                                console.log(lb);
+                                alert("Content loaded");
                             }
-                        } else {
-                            lb.addItem({
-                                target: target,
-                                mode: "image",
-                                title: evt.target.getAttribute("data-title") || ""
-                            });
-                        }
-
-                        lb.set("itemsKey", index);
+                        });
                         lb.open();
                     }
-                    return;
                 }, false);
-            }
-        });
-    </script>
+            });
+        </script>
+
+        <h1>AJAX multiple</h1>
+        <p>shows previous- and next-button and uses dragdealer</p>
+        <button id="ajax-multiple">load ajax multiple</button>
+        <script>
+            requirejs(["Lightbox"], function (Lightbox) {
+                var button = document.querySelector("#ajax-multiple");
+                button.addEventListener("click", function (evt) {
+                    var lb = new Lightbox({
+                        pathToRequirejsDragdealer: 'https://cdnjs.cloudflare.com/ajax/libs/dragdealer/0.9.9/dragdealer.min.js'
+                    });
+
+                    lb.addItem({
+                        target: 'example_ajax1.html',
+                        mode: 'get',
+                        title: 'Page #1'
+                    });
+
+                    var fd = new FormData();
+                    fd.append("foo", "bar");
+
+                    lb.addItem({
+                        target: 'example_ajax2.html',
+                        mode: 'post',
+                        title: 'Page #2',
+                        data: fd
+                    });
+
+                    lb.open();
+                }, false);
+            });
+        </script>
+
+        <h1>Images</h1>
+        <p>A group of images. Shows previous- and next-button and uses dragdealer</p>
+        <ul>
+            <li>
+                <a href="https://farm1.staticflickr.com/391/31833526510_a818f4907b_k_d.jpg" class="lightbox" data-title="Orbital-1 Mission Antares Launch"
+                    data-group="lightbox_group_1">open image in lightbox</a>
+                <br />Photo by 'NASA on The Commons' on
+                <a href="https://www.flickr.com/photos/nasacommons/31833526510/" target="_blank">Flickr</a>
+            </li>
+            <li>
+                <a href="https://farm6.staticflickr.com/5457/9459374852_ba0e2bc823_k_d.jpg" class="lightbox" data-title="Skylab and Earth Limb"
+                    data-group="lightbox_group_1">open image in lightbox</a>
+                <br />Photo by 'NASA on The Commons' on
+                <a href="https://www.flickr.com/photos/nasacommons/9459374852/" target="_blank">Flickr</a>
+            </li>
+            <li>
+                <a href="https://farm3.staticflickr.com/2842/9458008753_da6ca9e57f_o_d.jpg" class="lightbox" data-title="Fireworks of Star Formation Light Up a Galaxy"
+                    data-group="lightbox_group_1">open image in lightbox</a>
+                <br />Photo by 'NASA on The Commons' on
+                <a href="https://www.flickr.com/photos/nasacommons/9458008753/" target="_blank">Flickr</a>
+            </li>
+        </ul>
+
+        <p>Single image but with data-group defined.</p>
+        <ul>
+            <li>
+                <a href="https://farm1.staticflickr.com/695/31258502484_59cf226b4f_k_d.jpg" class="lightbox" data-title="Blue Marble 2012"
+                    data-group="lightbox_group_4">open image in lightbox</a>
+                <br />Photo by 'NASA on The Commons' on
+                <a href="https://www.flickr.com/photos/nasacommons/31258502484/" target="_blank">Flickr</a>
+            </li>
+        </ul>
+
+        <p>Just a single image.</p>
+        <ul>
+            <li>
+                <a href="https://farm6.staticflickr.com/5348/8980506113_ab7c654c36_o_d.jpg
+            " class="lightbox" data-title="Mars Exploration Rovers, 2003">open image in lightbox</a>
+                <br />Photo by 'NASA on The Commons' on
+                <a href="https://www.flickr.com/photos/nasacommons/8980506113/" target="_blank">Flickr</a>
+            </li>
+        </ul>
+
+        <script>
+            requirejs(["Lightbox"], function (Lightbox) {
+                var anchors = document.querySelectorAll("a.lightbox");
+                for (var a = 0; a < anchors.length; a++) {
+                    anchors[a].addEventListener("click", function (evt) {
+                        evt.preventDefault();
+                        var target = evt.target.getAttribute("href");
+                        if (target && target.match(/\.(jpeg|jpg|gif|png)$/) !== null) {
+                            var lb = new Lightbox({
+                                pathToRequirejsDragdealer: 'https://cdnjs.cloudflare.com/ajax/libs/dragdealer/0.9.9/dragdealer.min.js'
+                            });
+
+                            var index = 0;
+                            if (evt.target.getAttribute("data-group")) {
+                                var groupedAnchors = document.querySelectorAll("a.lightbox[data-group='" + evt.target.getAttribute("data-group") + "']");
+                                for (var a = 0; a < groupedAnchors.length; a++) {
+                                    lb.addItem({
+                                        target: groupedAnchors[a].getAttribute("href"),
+                                        mode: "image",
+                                        title: groupedAnchors[a].getAttribute("data-title") || ""
+                                    });
+                                    if (target === groupedAnchors[a].getAttribute("href")) {
+                                        index = a;
+                                    }
+                                }
+                            } else {
+                                lb.addItem({
+                                    target: target,
+                                    mode: "image",
+                                    title: evt.target.getAttribute("data-title") || ""
+                                });
+                            }
+
+                            lb.set("itemsKey", index);
+                            lb.open();
+                        }
+                        return;
+                    }, false);
+                }
+            });
+        </script>
+    </div>
 </body>
 
 </html>

@@ -90,7 +90,7 @@ html.#{$lightbox-active} {
 	right: 0;
 	bottom: 0;
 	background-color: $lightbox-background-color;
-	//background-color: rgba(red($background-color), green($background-color), blue($background-color), .80);
+	//background-color: rgba(red($lightbox-background-color), green($lightbox-background-color), blue($lightbox-background-color), 0.8);
 	z-index: $lightbox-z-index;
 }
 
@@ -163,26 +163,26 @@ html.#{$lightbox-active} {
 		border: none;
 	}
 
-	&.ios {
-		overflow-y: auto;
-		-webkit-overflow-scrolling: touch !important;
+	// A content-element in ajax-mode
+	// = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+	&.#{$lightbox-content-ajax} {
+		overflow: auto;
 	}
-}
 
+	// A content-element in image-mode
+	// = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+	&.#{$lightbox-content-image} {
+		background-repeat: no-repeat;
+		background-size: contain;
+		background-position: 50% 50%;
+	}
 
-// A content-element in ajax-mode
-// = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
-.#{$lightbox-content}.#{$lightbox-content-ajax} {
-	overflow: auto;
-}
-
-
-// A content-element in image-mode
-// = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
-.#{$lightbox-content}.#{$lightbox-content-image} {
-	background-repeat: no-repeat;
-	background-size: contain;
-	background-position: 50% 50%;
+	// When we have an iOS touch-device
+	// = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+	&.ios {
+		overflow-y: scroll;
+		-webkit-overflow-scrolling: touch !important;
+	}	
 }
 
 

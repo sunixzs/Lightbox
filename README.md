@@ -5,8 +5,17 @@ Uses Dragdealer to handle multiple items (screens) in lightbox.
 
 ## ChangeLog
 
-### 0.0.0 initial beta version
-Tested some stuff, but not all.
+### 0.0.0 initial version
+Tested some stuff, but not all. Should work in all major browsers (01/2018).
+
+Tested in:
+* Mozilla Firefox 57
+* Google Chrome 63
+* Apple Safari 11 on Desktop
+* Apple Safari iOS 11 on iPad and iPhone
+* Microsoft Internet Explorer 11
+* Microsoft Internet Explorer 10
+* Microsoft Edge 16
 
 ## Requirements
 * Dragdealer for multiple items in lightbox (https://github.com/skidding/dragdealer)
