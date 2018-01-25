@@ -153,6 +153,7 @@ html.#{$lightbox-active} {
 	right: 0;
 	bottom: 0;
 	overflow: hidden;
+	color: $lightbox-color-active;
 
 	iframe {
 		position: absolute;

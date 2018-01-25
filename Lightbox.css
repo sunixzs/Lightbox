@@ -88,6 +88,7 @@ html.lightbox-active body {
   right: 0;
   bottom: 0;
   overflow: hidden;
+  color: black;
 }
 
 .lightbox-content iframe {
