@@ -85,17 +85,22 @@
                     this.get().style.opacity = 1;
                     this.isVisible = true;
                 }
+                return this;
             };
 
             this.hide = function () {
-                if (this.isVisible === true) {
+                if (this.isVisible === true && this.get()) {
                     this.get().style.opacity = 0;
                     this.isVisible = false;
                 }
+                return this;
             }
 
             this.remove = function () {
-                this.get().parentNode.removeChild(this.get());
+                if (this.get() && this.get().parentNode) {
+                    this.get().parentNode.removeChild(this.get());
+                }
+                return this;
             }
 
             this.hideAndRemove = function (cb) {
@@ -106,9 +111,13 @@
                         cb();
                     }
                 }, 300);
+                return this;
             }
 
             this.addClass = function (c) {
+                if (!this.get()) {
+                    return this;
+                }
                 if (c.trim().indexOf(" ") >= 0) {
                     var cc = c.split(" ");
                     for (var i = 0; i < cc.length; i++) {
@@ -119,9 +128,13 @@
                 } else {
                     this.get().classList.add(c.trim());
                 }
+                return this;
             };
 
             this.removeClass = function (c) {
+                if (!this.get()) {
+                    return this;
+                }
                 if (c.trim().indexOf(" ") >= 0) {
                     var cc = c.split(" ");
                     for (var i = 0; i < cc.length; i++) {
@@ -132,6 +145,7 @@
                 } else {
                     this.get().classList.remove(c.trim());
                 }
+                return this;
             };
 
             this.preventTouchmove = function () {
