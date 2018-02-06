@@ -390,8 +390,8 @@
             item.iframe = new Element('<iframe src="' + item.target + '" class="' + this.settings.iframeClass + '" frameborder="0" scrolling="' + scrolling + '"></iframe>');
             item.iframe.hide();
             if (this.settings.iframeTransparencyMode) {
-                iframe.get().setAttribute("allowtransparency", "true");
-                iframe.get().style.backgroundColor = "transparent";
+                item.iframe.get().setAttribute("allowtransparency", "true");
+                item.iframe.get().style.backgroundColor = "transparent";
             }
             item.contentElement.get().appendChild(item.iframe.get());
 
