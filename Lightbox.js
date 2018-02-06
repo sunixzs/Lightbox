@@ -387,20 +387,20 @@
                 scrolling = 'no';
             }
 
-            var iframe = new Element('<iframe src="' + item.target + '" class="' + this.settings.iframeClass + '" frameborder="0" scrolling="' + scrolling + '"></iframe>');
-            iframe.hide();
+            item.iframe = new Element('<iframe src="' + item.target + '" class="' + this.settings.iframeClass + '" frameborder="0" scrolling="' + scrolling + '"></iframe>');
+            item.iframe.hide();
             if (this.settings.iframeTransparencyMode) {
                 iframe.get().setAttribute("allowtransparency", "true");
                 iframe.get().style.backgroundColor = "transparent";
             }
-            item.contentElement.get().appendChild(iframe.get());
+            item.contentElement.get().appendChild(item.iframe.get());
 
-            this.event.addEvent(iframe.get(), "load", function () {
+            this.event.addEvent(item.iframe.get(), "load", function () {
                 // @todo Find html and body in iframe and set backgroundColor to transparent
                 //if (self.settings.iframeTransparencyMode) {
                 //
                 //}
-                iframe.show();
+                item.iframe.show();
                 item.loadingElement.hideAndRemove();
                 if (item.title && self.settings.items.length === 1) {
                     self.infoElement.get().innerHTML = item.title;
