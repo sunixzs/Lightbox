@@ -381,31 +381,36 @@
             item.loadingElement = new Element(this.settings.loadingHtml);
             item.contentElement.get().appendChild(item.loadingElement.get());
 
-            var scrolling = 'yes';
+            var isIOS = false;
             if (navigator.userAgent.match(/(iPod|iPhone|iPad)/)) {
                 item.contentElement.addClass(this.settings.contentClassIos);
-                scrolling = 'no';
+                item.contentElement.get().style.overflow = "hidden";
+                isIOS = true;
             }
 
-            item.iframe = new Element('<iframe src="' + item.target + '" class="' + this.settings.iframeClass + '" frameborder="0" scrolling="' + scrolling + '"></iframe>');
-            item.iframe.hide();
+            var iframe = new Element('<iframe src="' + item.target + '" class="' + this.settings.iframeClass + '" frameborder="0" scrolling="' + (isIOS ? "no" : "yes") + '"></iframe>');
+            iframe.hide();
             if (this.settings.iframeTransparencyMode) {
-                item.iframe.get().setAttribute("allowtransparency", "true");
-                item.iframe.get().style.backgroundColor = "transparent";
+                iframe.get().setAttribute("allowtransparency", "true");
+                iframe.get().style.backgroundColor = "transparent";
             }
-            item.contentElement.get().appendChild(item.iframe.get());
+            item.contentElement.get().appendChild(iframe.get());
 
-            this.event.addEvent(item.iframe.get(), "load", function () {
+            this.event.addEvent(iframe.get(), "load", function () {
                 // @todo Find html and body in iframe and set backgroundColor to transparent
                 //if (self.settings.iframeTransparencyMode) {
                 //
                 //}
-                item.iframe.show();
+                iframe.show();
                 item.loadingElement.hideAndRemove();
                 if (item.title && self.settings.items.length === 1) {
                     self.infoElement.get().innerHTML = item.title;
                 }
                 self.event.itemCallback(item);
+                if (isIOS) {
+                    item.contentElement.get().style.overflow = "auto";
+                    iframe.get().style.height = iframe.get().contentDocument.body.scrollHeight + "px";
+                }
             });
         };
 
