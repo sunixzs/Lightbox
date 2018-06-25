@@ -477,7 +477,7 @@
                         self.event.itemCallback(item);
                         break;
                 }
-            }, 5000);
+            }, self.settings.imageLoadTimeout * 1000);
         };
 
         /**
@@ -487,7 +487,7 @@
          * @param {number} timeout 
          */
         this.loadImage = function (item, cb, timeout) {
-            timeout = timeout || self.settings.imageLoadTimeout;
+            timeout = timeout || self.settings.imageLoadTimeout * 1000;
             var timedOut = false, timer;
             var img = new Image();
             img.onerror = img.onabort = function () {
