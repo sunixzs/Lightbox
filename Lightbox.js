@@ -1,5 +1,5 @@
-(function (window) {
-    'use strict';
+(function(window) {
+    "use strict";
 
     function Lightbox(params) {
         var self = this;
@@ -12,26 +12,26 @@
             backgroundHtml: '<div class="lightbox-background lightbox-opacity-animation"></div>', // HTML used for the lightbox background
             closeHtml: '<div class="lightbox-close lightbox-opacity-animation"></div>', // HTML used for the close button
             contentContainerHtml: '<div class="lightbox-content-container lightbox-opacity-animation"></div>', // HTML used for the element with the content in
-            multipleItemsClass: 'multiple-items', // CSS-class, which will be set on the previous container-element and the info-element, if there are multiple items.
-            multipleItemsContainerHtml: '<div></div>', // HTML used for the inner container, if there is more than one item.
-            multipleItemsContainerClass: 'lightbox-multiple-items-container', // CSS-class for the container above. Also used for Dragdealer as slide.
+            multipleItemsClass: "multiple-items", // CSS-class, which will be set on the previous container-element and the info-element, if there are multiple items.
+            multipleItemsContainerHtml: "<div></div>", // HTML used for the inner container, if there is more than one item.
+            multipleItemsContainerClass: "lightbox-multiple-items-container", // CSS-class for the container above. Also used for Dragdealer as slide.
             contentHtml: '<div class="lightbox-content"></div>', // HTML used for each item as wrap
-            contentClassIos: 'ios', // additional CSS-class for iframe-content-elements, if iOS was detected (for scrolling/touchmove purpose)
-            contentClassIframe: 'lightbox-content-iframe', // additional CSS-class for content-elements in iframe-mode
-            contentClassImage: 'lightbox-content-image', // additional CSS-class for content-elements in image-mode
-            contentClassGet: 'lightbox-content-ajax lightbox-content-get', // additional CSS-classes for content-elements in ajax-get-mode
-            contentClassPost: 'lightbox-content-ajax lightbox-content-post', // additional CSS-class for content-elements in ajax-post-mode
+            contentClassIos: "ios", // additional CSS-class for iframe-content-elements, if iOS was detected (for scrolling/touchmove purpose)
+            contentClassIframe: "lightbox-content-iframe", // additional CSS-class for content-elements in iframe-mode
+            contentClassImage: "lightbox-content-image", // additional CSS-class for content-elements in image-mode
+            contentClassGet: "lightbox-content-ajax lightbox-content-get", // additional CSS-classes for content-elements in ajax-get-mode
+            contentClassPost: "lightbox-content-ajax lightbox-content-post", // additional CSS-class for content-elements in ajax-post-mode
             executeAjaxScript: true,
-            iframeClass: 'lightbox-iframe', // CSS-class for the iframe-element in the content-element in iframe-mode
+            iframeClass: "lightbox-iframe", // CSS-class for the iframe-element in the content-element in iframe-mode
             iframeTransparencyMode: true, // if true, the iframe gets an transparency-attribute.
-            htmlActiveClass: 'lightbox-active', // CSS-class to be set/removed, if the lightbox is active/inactive
+            htmlActiveClass: "lightbox-active", // CSS-class to be set/removed, if the lightbox is active/inactive
             previousHtml: '<div class="lightbox-previous lightbox-opacity-animation"></div>', // HTML used for the previous-button-element
             nextHtml: '<div class="lightbox-next lightbox-opacity-animation"></div>', // HTML used for the next-button-element
             infoHtml: '<div class="lightbox-info lightbox-opacity-animation"></div>', // HTML used for the info-area
             loadingHtml: '<div class="lightbox-loading lightbox-opacity-animation"><i class="fa fa-spinner fa-spin fa-fw"></i></div>', // HTML used for the spinner
             closeOnBackgroundClick: true, // if true, the lightbox will be closed if the background was clicked
             imageLoadTimeout: 10, // sends an image should be loaded before timeout
-            pathToRequirejsDragdealer: 'dragdealer.min' // we use requirejs to load Dragdealer if needed, if there are multiple items. This is the part in the requirejs-array. Leave empty, if Dragdealer is allready loaded.
+            pathToRequirejsDragdealer: "dragdealer.min" // we use requirejs to load Dragdealer if needed, if there are multiple items. This is the part in the requirejs-array. Leave empty, if Dragdealer is allready loaded.
         };
 
         /**
@@ -57,22 +57,22 @@
 
         /**
          * Helper-class to handle HTML-elements.
-         * @param {string} html 
+         * @param {string} html
          */
-        var Element = function (html) {
+        var Element = function(html) {
             var selfElem = this;
             this.isVisible = true;
             this.html = html.trim();
             this.element = null;
 
-            this.get = function () {
+            this.get = function() {
                 if (this.element === null || typeof this.element !== "object") {
-                    if ("content" in document.createElement('template')) {
-                        var template = document.createElement('template'); // create dom-element from html-string by using html5 template-element
+                    if ("content" in document.createElement("template")) {
+                        var template = document.createElement("template"); // create dom-element from html-string by using html5 template-element
                         template.innerHTML = this.html;
                         this.element = template.content.firstChild;
                     } else {
-                        var div = document.createElement('div'); // we only can create elements which are valid as a direct child in a div
+                        var div = document.createElement("div"); // we only can create elements which are valid as a direct child in a div
                         div.innerHTML = this.html;
                         this.element = div.firstChild;
                     }
@@ -80,7 +80,7 @@
                 return this.element;
             };
 
-            this.show = function () {
+            this.show = function() {
                 if (this.isVisible === false) {
                     this.get().style.opacity = 1;
                     this.isVisible = true;
@@ -88,33 +88,33 @@
                 return this;
             };
 
-            this.hide = function () {
+            this.hide = function() {
                 if (this.isVisible === true && this.get()) {
                     this.get().style.opacity = 0;
                     this.isVisible = false;
                 }
                 return this;
-            }
+            };
 
-            this.remove = function () {
+            this.remove = function() {
                 if (this.get() && this.get().parentNode) {
                     this.get().parentNode.removeChild(this.get());
                 }
                 return this;
-            }
+            };
 
-            this.hideAndRemove = function (cb) {
+            this.hideAndRemove = function(cb) {
                 this.hide();
-                window.setTimeout(function () {
+                window.setTimeout(function() {
                     selfElem.remove();
                     if (typeof cb === "function") {
                         cb();
                     }
                 }, 300);
                 return this;
-            }
+            };
 
-            this.addClass = function (c) {
+            this.addClass = function(c) {
                 if (!this.get()) {
                     return this;
                 }
@@ -131,7 +131,7 @@
                 return this;
             };
 
-            this.removeClass = function (c) {
+            this.removeClass = function(c) {
                 if (!this.get()) {
                     return this;
                 }
@@ -148,7 +148,7 @@
                 return this;
             };
 
-            this.preventTouchmove = function () {
+            this.preventTouchmove = function() {
                 self.event.addEvent(this.get(), "touchmove", self.event.preventDefault);
             };
             return this;
@@ -156,10 +156,10 @@
 
         /**
          * Public method to set a param in settings.
-         * @param {string} key 
-         * @param {mixed} value 
+         * @param {string} key
+         * @param {mixed} value
          */
-        this.set = function (key, value) {
+        this.set = function(key, value) {
             if (typeof this.settings[key] !== "undefined") {
                 this.settings[key] = value;
             }
@@ -168,9 +168,9 @@
 
         /**
          * Public method to add one item.
-         * @param {object} params 
+         * @param {object} params
          */
-        this.addItem = function (params) {
+        this.addItem = function(params) {
             if (typeof params.target !== "string") {
                 return null;
             }
@@ -184,22 +184,22 @@
             });
 
             return this;
-        }
+        };
 
         /**
          * event wrapper
          */
         this.event = {
-            addEvent: function (elem, event, fn) {
+            addEvent: function(elem, event, fn) {
                 elem.addEventListener(event, fn, false);
             },
-            removeEvent: function (elem, event, fn) {
+            removeEvent: function(elem, event, fn) {
                 elem.removeEventListener(event, fn, false);
             },
-            preventDefault: function (evt) {
+            preventDefault: function(evt) {
                 evt.preventDefault();
             },
-            itemCallback: function (item) {
+            itemCallback: function(item) {
                 if (item.callback && typeof item.callback === "function") {
                     item.callback(item, self);
                 }
@@ -208,9 +208,9 @@
 
         /**
          * Finds and evals javascript in html string
-         * @param {string} html 
+         * @param {string} html
          */
-        this.executeScript = function (html) {
+        this.executeScript = function(html) {
             var scripts = [];
 
             while (html.indexOf("<script") > -1 || html.indexOf("</script") > -1) {
@@ -236,7 +236,7 @@
         /**
          * Method to open the lightbox after items or one item is defined.
          */
-        this.open = function () {
+        this.open = function() {
             if (typeof this.settings.items[this.settings.itemsKey] !== "object") {
                 console.log("Error in Lightbox: No items defined!");
                 return null;
@@ -250,7 +250,7 @@
             this.backgroundElement.show();
 
             if (this.settings.closeOnBackgroundClick === true) {
-                this.event.addEvent(this.backgroundElement.get(), "click", function () {
+                this.event.addEvent(this.backgroundElement.get(), "click", function() {
                     self.close();
                 });
             }
@@ -261,7 +261,7 @@
             this.closeElement.hide();
             this.settings.container.appendChild(this.closeElement.get());
             this.closeElement.show();
-            this.event.addEvent(this.closeElement.get(), "click", function () {
+            this.event.addEvent(this.closeElement.get(), "click", function() {
                 self.close();
             });
 
@@ -271,7 +271,7 @@
 
             // add special method to add automatically content to the container in relation to one item at all or multiple items.
             this.contentContainerElement.multipleItemsContainer = null;
-            this.contentContainerElement.addContentElement = function (ceToAdd) {
+            this.contentContainerElement.addContentElement = function(ceToAdd) {
                 if (self.settings.items.length > 1) {
                     if (this.multipleItemsContainer === null) {
                         this.multipleItemsContainer = new Element(self.settings.multipleItemsContainerHtml);
@@ -296,7 +296,7 @@
                 // create previous button
                 this.previousElement = new Element(this.settings.previousHtml);
                 this.previousElement.preventTouchmove();
-                this.event.addEvent(this.previousElement.get(), "click", function () {
+                this.event.addEvent(this.previousElement.get(), "click", function() {
                     self.showPreviousItem();
                 });
                 this.settings.container.appendChild(this.previousElement.get());
@@ -304,7 +304,7 @@
                 // create next button
                 this.nextElement = new Element(this.settings.nextHtml);
                 this.nextElement.preventTouchmove();
-                this.event.addEvent(this.nextElement.get(), "click", function () {
+                this.event.addEvent(this.nextElement.get(), "click", function() {
                     self.showNextItem();
                 });
                 this.settings.container.appendChild(this.nextElement.get());
@@ -323,14 +323,16 @@
                     loose: true,
                     requestAnimationFrame: true,
                     handleClass: self.settings.multipleItemsContainerClass,
-                    callback: function () {
+                    callback: function() {
                         var s = self.dragdealer.getStep()[0];
                         self.settings.itemsKey = s;
-                        self.infoElement.get().innerHTML = self.settings.items[s - 1].title ? s + "/" + self.settings.items.length + " - " + self.settings.items[s - 1].title : s + "/" + self.settings.items.length;
+                        self.infoElement.get().innerHTML = self.settings.items[s - 1].title
+                            ? s + "/" + self.settings.items.length + " - " + self.settings.items[s - 1].title
+                            : s + "/" + self.settings.items.length;
                     }
                 };
                 if (this.settings.pathToRequirejsDragdealer) {
-                    require([this.settings.pathToRequirejsDragdealer], function (Dragdealer) {
+                    require([this.settings.pathToRequirejsDragdealer], function(Dragdealer) {
                         self.dragdealer = new Dragdealer(self.contentContainerElement.get(), dragdealerConfiguration);
                         self.dragdealer.setStep(self.settings.itemsKey + 1);
                     });
@@ -345,14 +347,16 @@
             // prevent scrolling the page
             document.querySelector("html").classList.add(this.settings.htmlActiveClass);
 
+            this.enableKeyboard();
+
             return this;
         };
 
         /**
          * Just a helper-method to add several types of content to the content-container.
-         * @param {object} item 
+         * @param {object} item
          */
-        this.addContent = function (item) {
+        this.addContent = function(item) {
             switch (item.mode) {
                 case "iframe":
                     this.addContentIframe(item);
@@ -371,9 +375,9 @@
 
         /**
          * Adds an iframe to the content-container.
-         * @param {object} item 
+         * @param {object} item
          */
-        this.addContentIframe = function (item) {
+        this.addContentIframe = function(item) {
             item.contentElement = new Element(this.settings.contentHtml);
             item.contentElement.addClass(this.settings.contentClassIframe);
             this.contentContainerElement.addContentElement(item.contentElement.get());
@@ -396,7 +400,7 @@
             }
             item.contentElement.get().appendChild(iframe.get());
 
-            this.event.addEvent(iframe.get(), "load", function () {
+            this.event.addEvent(iframe.get(), "load", function() {
                 // @todo Find html and body in iframe and set backgroundColor to transparent
                 //if (self.settings.iframeTransparencyMode) {
                 //
@@ -416,10 +420,10 @@
 
         /**
          * Adds ajax-content to content-container.
-         * @param {object} item 
+         * @param {object} item
          * @param {string} method Either "get" or "post"
          */
-        this.addContentAjax = function (item, method) {
+        this.addContentAjax = function(item, method) {
             item.contentElement = new Element(this.settings.contentHtml);
             item.contentElement.addClass(method === "get" ? this.settings.contentClassGet : this.settings.contentClassPost);
             this.contentContainerElement.addContentElement(item.contentElement.get());
@@ -433,7 +437,7 @@
 
             var xhr = new XMLHttpRequest();
             xhr.open(method === "get" ? "GET" : "POST", item.target);
-            this.event.addEvent(xhr, 'load', function (evt) {
+            this.event.addEvent(xhr, "load", function(evt) {
                 if (xhr.status >= 200 && xhr.status < 300) {
                     item.contentElement.get().innerHTML = xhr.responseText;
                     self.event.itemCallback(item);
@@ -450,9 +454,9 @@
 
         /**
          * Adds an image to the content-container.
-         * @param {object} item 
+         * @param {object} item
          */
-        this.addContentImage = function (item) {
+        this.addContentImage = function(item) {
             item.contentElement = new Element(this.settings.contentHtml);
             item.contentElement.addClass(this.settings.contentClassImage);
             this.contentContainerElement.addContentElement(item.contentElement.get());
@@ -460,60 +464,65 @@
             item.loadingElement = new Element(this.settings.loadingHtml);
             item.contentElement.get().appendChild(item.loadingElement.get());
 
-            this.loadImage(item, function (item, state) {
-                item.loadingElement.hideAndRemove();
-                switch (state) {
-                    case "error":
-                        item.contentElement.get().innerHTML = "ERROR: could not load the image from " + item.target + ".";
-                        break;
-                    case "timeout":
-                        item.contentElement.get().innerHTML = "ERROR: loading the image from " + item.target + " took too long.";
-                        break;
-                    default:
-                        item.contentElement.get().style.backgroundImage = "url(" + item.target + ")";
-                        if (item.title && self.settings.items.length === 1) {
-                            self.infoElement.get().innerHTML = item.title;
-                        }
-                        self.event.itemCallback(item);
-                        break;
-                }
-            }, self.settings.imageLoadTimeout * 1000);
+            this.loadImage(
+                item,
+                function(item, state) {
+                    item.loadingElement.hideAndRemove();
+                    switch (state) {
+                        case "error":
+                            item.contentElement.get().innerHTML = "ERROR: could not load the image from " + item.target + ".";
+                            break;
+                        case "timeout":
+                            item.contentElement.get().innerHTML = "ERROR: loading the image from " + item.target + " took too long.";
+                            break;
+                        default:
+                            item.contentElement.get().style.backgroundImage = "url(" + item.target + ")";
+                            if (item.title && self.settings.items.length === 1) {
+                                self.infoElement.get().innerHTML = item.title;
+                            }
+                            self.event.itemCallback(item);
+                            break;
+                    }
+                },
+                self.settings.imageLoadTimeout * 1000
+            );
         };
 
         /**
          * Helper for this.addContentImage() to load an image.
-         * @param {object} item 
-         * @param {function} cb 
-         * @param {number} timeout 
+         * @param {object} item
+         * @param {function} cb
+         * @param {number} timeout
          */
-        this.loadImage = function (item, cb, timeout) {
+        this.loadImage = function(item, cb, timeout) {
             timeout = timeout || self.settings.imageLoadTimeout * 1000;
-            var timedOut = false, timer;
+            var timedOut = false,
+                timer;
             var img = new Image();
-            img.onerror = img.onabort = function () {
+            img.onerror = img.onabort = function() {
                 if (!timedOut) {
                     clearTimeout(timer);
                     cb(item, "error");
                 }
             };
-            img.onload = function () {
+            img.onload = function() {
                 if (!timedOut) {
                     clearTimeout(timer);
                     cb(item, "success");
                 }
             };
             img.src = item.target;
-            timer = setTimeout(function () {
+            timer = setTimeout(function() {
                 timedOut = true;
                 img.src = "//!!!!/test.jpg"; // reset .src to invalid URL so it stops previous loading, but doesn't trigger new load
                 cb(item, "timeout");
             }, timeout);
-        }
+        };
 
         /**
          * If there are multiple items, this is the function to go to the next screen.
          */
-        this.showNextItem = function () {
+        this.showNextItem = function() {
             if (!this.dragdealer) {
                 return;
             }
@@ -524,7 +533,7 @@
         /**
          * If there are multiple items, this is the function to go to the previous screen.
          */
-        this.showPreviousItem = function () {
+        this.showPreviousItem = function() {
             if (!this.dragdealer) {
                 return;
             }
@@ -533,17 +542,77 @@
         };
 
         /**
+         * namespaced events to use for keydown on document.
+         */
+        var NSEvents = {
+            on(event, cb, opts) {
+                if (!this.namespaces)
+                    // save the namespaces on the DOM element itself
+                    this.namespaces = {};
+
+                this.namespaces[event] = cb;
+                var options = opts || false;
+
+                this.addEventListener(event.split(".")[0], cb, options);
+                return this;
+            },
+            off(event) {
+                this.removeEventListener(event.split(".")[0], this.namespaces[event]);
+                delete this.namespaces[event];
+                return this;
+            }
+        };
+
+        /**
+         * Binds keyboard to move items and close the lightbox
+         */
+        this.enableKeyboard = function() {
+            // Extend the DOM with these above custom methods
+            document.on = Element.prototype.on = NSEvents.on;
+            document.off = Element.prototype.off = NSEvents.off;
+
+            // bind keydown
+            document.on("keydown.Lighbox", function(event) {
+                switch (event.which) {
+                    case 39: // arrow to right
+                        if (self.settings.items.length > 1) {
+                            self.showNextItem();
+                        }
+                        break;
+                    case 37: // arrow to left
+                        if (self.settings.items.length > 1) {
+                            self.showPreviousItem();
+                        }
+                        break;
+                    case 27: // ESC
+                        if (self.settings.closeOnBackgroundClick === true) {
+                            self.close();
+                        }
+                        break;
+                }
+            });
+        };
+
+        /**
+         * Unbinds the keyword.
+         * Must be called when closing Lightbox to prevent errors
+         */
+        this.disableKeyboard = function() {
+            document.off("keydown.Lighbox");
+        };
+
+        /**
          * Removes all elements from stage. Closes the lightbox.
          */
-        this.close = function () {
+        this.close = function() {
             if (this.backgroundElement) {
-                this.backgroundElement.hideAndRemove(function () {
+                this.backgroundElement.hideAndRemove(function() {
                     self.backgroundElement = null;
                 });
             }
 
             if (this.closeElement) {
-                this.closeElement.hideAndRemove(function () {
+                this.closeElement.hideAndRemove(function() {
                     self.closeElement = null;
                 });
             }
@@ -556,12 +625,12 @@
                 this.infoElement = null;
             }
             if (this.previousElement) {
-                this.previousElement.hideAndRemove(function () {
+                this.previousElement.hideAndRemove(function() {
                     self.previousElement = null;
                 });
             }
             if (this.nextElement) {
-                this.nextElement.hideAndRemove(function () {
+                this.nextElement.hideAndRemove(function() {
                     self.nextElement = null;
                 });
             }
@@ -569,12 +638,13 @@
             // reactivate scrolling
             document.querySelector("html").classList.remove(this.settings.htmlActiveClass);
 
+            this.disableKeyboard();
             return this;
         };
     }
 
-    if (typeof define === 'function' && define.amd) {
-        define(function () {
+    if (typeof define === "function" && define.amd) {
+        define(function() {
             return Lightbox;
         });
     } else {
