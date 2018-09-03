@@ -499,19 +499,23 @@
             var timedOut = false,
                 timer;
             var img = new Image();
+
             img.onerror = img.onabort = function() {
                 if (!timedOut) {
                     clearTimeout(timer);
                     cb(item, "error");
                 }
             };
+
             img.onload = function() {
                 if (!timedOut) {
                     clearTimeout(timer);
                     cb(item, "success");
                 }
             };
+
             img.src = item.target;
+
             timer = setTimeout(function() {
                 timedOut = true;
                 img.src = "//!!!!/test.jpg"; // reset .src to invalid URL so it stops previous loading, but doesn't trigger new load
@@ -545,18 +549,19 @@
          * namespaced events to use for keydown on document.
          */
         var NSEvents = {
-            on(event, cb, opts) {
-                if (!this.namespaces)
-                    // save the namespaces on the DOM element itself
+            on: function(event, cb, opts) {
+                // save the namespaces on the DOM element itself
+                if (typeof this.namespaces !== "object") {
                     this.namespaces = {};
+                }
 
                 this.namespaces[event] = cb;
-                var options = opts || false;
+                var options = opts ? opts : false;
 
                 this.addEventListener(event.split(".")[0], cb, options);
                 return this;
             },
-            off(event) {
+            off: function(event) {
                 this.removeEventListener(event.split(".")[0], this.namespaces[event]);
                 delete this.namespaces[event];
                 return this;
