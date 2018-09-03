@@ -8,9 +8,6 @@ html.lightbox-active body {
 
 .lightbox-opacity-animation {
   -webkit-transition: opacity 0.2s ease-in-out;
-  -moz-transition: opacity 0.2s ease-in-out;
-  -ms-transition: opacity 0.2s ease-in-out;
-  -o-transition: opacity 0.2s ease-in-out;
   transition: opacity 0.2s ease-in-out;
 }
 
@@ -135,14 +132,8 @@ html.lightbox-active body {
   cursor: pointer;
   z-index: 2003;
   -webkit-transition: all 0.2s ease-in-out;
-  -moz-transition: all 0.2s ease-in-out;
-  -ms-transition: all 0.2s ease-in-out;
-  -o-transition: all 0.2s ease-in-out;
   transition: all 0.2s ease-in-out;
   -webkit-transform-origin: 50% 50%;
-  -moz-transform-origin: 50% 50%;
-  -ms-transform-origin: 50% 50%;
-  -o-transform-origin: 50% 50%;
   transform-origin: 50% 50%;
 }
 
@@ -156,33 +147,21 @@ html.lightbox-active body {
   left: 0;
   background-color: #6F7271;
   -webkit-transition: all 0.3s ease-in-out;
-  -moz-transition: all 0.3s ease-in-out;
-  -ms-transition: all 0.3s ease-in-out;
-  -o-transition: all 0.3s ease-in-out;
   transition: all 0.3s ease-in-out;
 }
 
 .lightbox-close:before {
   -webkit-transform: translateY(1.5rem) rotateZ(-45deg);
-  -moz-transform: translateY(1.5rem) rotateZ(-45deg);
-  -ms-transform: translateY(1.5rem) rotateZ(-45deg);
-  -o-transform: translateY(1.5rem) rotateZ(-45deg);
   transform: translateY(1.5rem) rotateZ(-45deg);
 }
 
 .lightbox-close:after {
   -webkit-transform: translateY(1.5rem) rotateZ(45deg);
-  -moz-transform: translateY(1.5rem) rotateZ(45deg);
-  -ms-transform: translateY(1.5rem) rotateZ(45deg);
-  -o-transform: translateY(1.5rem) rotateZ(45deg);
   transform: translateY(1.5rem) rotateZ(45deg);
 }
 
 html.no-touch .lightbox-close:hover {
   -webkit-transform: rotate(180deg);
-  -moz-transform: rotate(180deg);
-  -ms-transform: rotate(180deg);
-  -o-transform: rotate(180deg);
   transform: rotate(180deg);
 }
 
@@ -213,12 +192,14 @@ html.no-touch .lightbox-close:hover:before, html.no-touch .lightbox-close:hover:
 
 .lightbox-previous:before,
 .lightbox-next:before {
-  transform: rotate(-45deg);
+  -webkit-transform: rotate(-45deg);
+          transform: rotate(-45deg);
 }
 
 .lightbox-previous:after,
 .lightbox-next:after {
-  transform: rotate(45deg);
+  -webkit-transform: rotate(45deg);
+          transform: rotate(45deg);
 }
 
 html.no-touch .lightbox-previous:hover:before, html.no-touch .lightbox-previous:hover:after, html.no-touch
