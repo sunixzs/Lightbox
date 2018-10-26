@@ -412,8 +412,10 @@
                 }
                 self.event.itemCallback(item);
                 if (isIOS) {
-                    item.contentElement.get().style.overflow = "auto";
-                    iframe.get().style.height = iframe.get().contentDocument.body.scrollHeight + "px";
+                    setTimeout(function () {
+                        item.contentElement.get().style.overflow = "scroll";
+                        iframe.get().style.height = iframe.get().contentDocument.body.scrollHeight + "px";
+                    }, 200);
                 }
             });
         };
