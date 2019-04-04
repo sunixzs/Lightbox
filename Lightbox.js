@@ -327,8 +327,8 @@
                         var s = self.dragdealer.getStep()[0];
                         self.settings.itemsKey = s;
                         self.infoElement.get().innerHTML = self.settings.items[s - 1].title
-                            ? s + "/" + self.settings.items.length + " - " + self.settings.items[s - 1].title
-                            : s + "/" + self.settings.items.length;
+                            ? s + " / " + self.settings.items.length + " - " + self.settings.items[s - 1].title
+                            : s + " / " + self.settings.items.length;
                     }
                 };
                 if (this.settings.pathToRequirejsDragdealer) {
