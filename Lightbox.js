@@ -261,7 +261,8 @@
             this.closeElement.hide();
             this.settings.container.appendChild(this.closeElement.get());
             this.closeElement.show();
-            this.event.addEvent(this.closeElement.get(), "click", function() {
+            this.event.addEvent(this.closeElement.get(), "click", function(e) {
+                e.preventDefault();
                 self.close();
             });
 
